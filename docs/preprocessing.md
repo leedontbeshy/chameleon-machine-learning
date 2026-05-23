@@ -1,14 +1,10 @@
 # Tiền xử lí dữ liệu BankChurners cho thuật toán Chameleon
 
-## 1. Mục tiêu của phần tiền xử lí
+## 1. Mục tiêu 
 
-Trong đồ án này, dữ liệu gốc là file `data/BankChurners.csv`, lấy từ bộ Credit Card Customers trên Kaggle: <https://www.kaggle.com/datasets/sakshigoyal7/credit-card-customers>.
+Dữ liệu gốc là file `data/BankChurners.csv`, lấy từ bộ Credit Card Customers trên Kaggle: <https://www.kaggle.com/datasets/sakshigoyal7/credit-card-customers>.
 
-Nhiệm vụ của phần này không phải là cài thuật toán Chameleon, mà là chuẩn bị dữ liệu sao cho bước Chameleon phía sau có thể sử dụng được. Nói cách khác, phần tiền xử lí đóng vai trò biến dữ liệu khách hàng ban đầu thành một ma trận đặc trưng sạch, toàn số, không chứa nhãn đáp án và phù hợp để tính khoảng cách giữa các khách hàng.
-
-Điều này quan trọng vì Chameleon là thuật toán phân cụm không giám sát. Thuật toán không học từ nhãn đúng/sai như các bài toán phân loại, mà dựa vào độ giống nhau giữa các điểm dữ liệu. Nếu dữ liệu đầu vào còn cột ID, cột nhãn churn, cột chữ chưa mã hóa, hoặc các cột có thang đo quá chênh lệch, kết quả phân cụm có thể bị sai lệch ngay từ đầu.
-
-## 2. Dữ liệu ban đầu có gì?
+## 2. Dữ liệu ban đầu 
 
 File `BankChurners.csv` có:
 
