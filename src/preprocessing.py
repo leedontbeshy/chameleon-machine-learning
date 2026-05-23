@@ -1,12 +1,4 @@
-"""Preprocess the BankChurners dataset for Chameleon clustering.
-
-The output feature matrix intentionally excludes identifiers, the churn label,
-and Kaggle's precomputed Naive Bayes columns so the clustering step does not
-receive answer-like information.
-
-Run from the project root:
-    python src/preprocessing.py
-"""
+# 1. Import thư viện cần dùng
 
 from __future__ import annotations
 
@@ -19,6 +11,9 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import RobustScaler
 
+
+
+# 2. Cấu hình chung và danh sách cột
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = PROJECT_ROOT / "data" / "BankChurners.csv"
@@ -43,6 +38,9 @@ ATTRITION_LABEL_MAP = {
 }
 
 
+
+# 3. Đọc tham số dòng lệnh
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Preprocess BankChurners.csv into Chameleon-ready CSV files."
@@ -61,6 +59,9 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
+
+
+# 4. Đọc dữ liệu gốc và kiểm tra các cột bắt buộc
 
 def read_dataset(input_path: Path) -> pd.DataFrame:
     if not input_path.exists():
@@ -92,6 +93,9 @@ def validate_required_columns(df: pd.DataFrame) -> None:
         )
 
 
+
+# 5. Tách nhãn churn để đánh giá cụm sau này
+
 def build_labels(df: pd.DataFrame) -> pd.DataFrame:
     labels = df[[ID_COLUMN, TARGET_COLUMN]].copy()
     labels["Attrition_Label"] = labels[TARGET_COLUMN].map(ATTRITION_LABEL_MAP)
@@ -106,7 +110,10 @@ def build_labels(df: pd.DataFrame) -> pd.DataFrame:
     return labels
 
 
+# 6. Tạo ma trận feature cho Chameleon
+
 def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
+    # Loại ID, nhãn churn, cột mô hình có sẵn và cột gần trùng thông tin.
     naive_bayes_columns = find_naive_bayes_columns(df)
     excluded_columns = [
         ID_COLUMN,
@@ -117,6 +124,7 @@ def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     feature_source = df.drop(columns=excluded_columns).copy()
 
+    # Dataset hiện chỉ có chuỗi "Unknown"; nếu có missing thật thì dừng lại.
     missing_feature_values = feature_source.isna().sum()
     columns_with_missing = missing_feature_values[missing_feature_values > 0]
     if not columns_with_missing.empty:
@@ -126,6 +134,7 @@ def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
             f"{columns_with_missing.to_dict()}"
         )
 
+    # Chuẩn hóa các cột số bằng RobustScaler để giảm ảnh hưởng của outlier.
     numeric_columns = [
         column for column in feature_source.columns if column not in CATEGORICAL_COLUMNS
     ]
@@ -140,6 +149,7 @@ def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
         index=feature_source.index,
     )
 
+    # One-hot encode cột phân loại; Unknown được giữ thành một nhóm riêng.
     categorical_features = feature_source[CATEGORICAL_COLUMNS].astype(str)
     encoded_categorical = pd.get_dummies(
         categorical_features,
@@ -163,6 +173,9 @@ def build_features(df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, Any]]:
 
     return features, metadata
 
+
+
+# 7. Hàm phụ trợ tạo metadata và thống kê mô tả
 
 def count_unknown_values(df: pd.DataFrame) -> dict[str, int]:
     return {
@@ -251,6 +264,9 @@ def build_metadata(
     return metadata
 
 
+
+# 8. Kiểm tra output và ghi file ra data/processed
+
 def validate_processed_outputs(
     raw_df: pd.DataFrame,
     features: pd.DataFrame,
@@ -300,6 +316,9 @@ def write_outputs(
         json.dump(metadata, file, indent=2, ensure_ascii=False)
         file.write("\n")
 
+
+
+# 9. Luồng chạy chính của chương trình
 
 def main() -> None:
     args = parse_args()
