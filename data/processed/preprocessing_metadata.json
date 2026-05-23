@@ -1,0 +1,297 @@
+{
+  "source_dataset": "E:\\HocTrenTruong\\MayHocCK\\data\\BankChurners.csv",
+  "output_directory": "E:\\HocTrenTruong\\MayHocCK\\data\\processed",
+  "raw_shape": {
+    "rows": 10127,
+    "columns": 23
+  },
+  "processed_shape": {
+    "feature_rows": 10127,
+    "feature_columns": 36,
+    "label_rows": 10127
+  },
+  "data_quality": {
+    "duplicate_rows": 0,
+    "duplicate_clientnum": 0,
+    "missing_values_by_column": {},
+    "unknown_counts": {
+      "Gender": 0,
+      "Education_Level": 1519,
+      "Marital_Status": 749,
+      "Income_Category": 1112,
+      "Card_Category": 0
+    }
+  },
+  "label_distribution": {
+    "Existing Customer": 8500,
+    "Attrited Customer": 1627
+  },
+  "attrition_label_map": {
+    "Existing Customer": 0,
+    "Attrited Customer": 1
+  },
+  "category_levels": {
+    "Gender": [
+      "F",
+      "M"
+    ],
+    "Education_Level": [
+      "College",
+      "Doctorate",
+      "Graduate",
+      "High School",
+      "Post-Graduate",
+      "Uneducated",
+      "Unknown"
+    ],
+    "Marital_Status": [
+      "Divorced",
+      "Married",
+      "Single",
+      "Unknown"
+    ],
+    "Income_Category": [
+      "$120K +",
+      "$40K - $60K",
+      "$60K - $80K",
+      "$80K - $120K",
+      "Less than $40K",
+      "Unknown"
+    ],
+    "Card_Category": [
+      "Blue",
+      "Gold",
+      "Platinum",
+      "Silver"
+    ]
+  },
+  "numeric_summary_raw_used_features": {
+    "Customer_Age": {
+      "min": 26.0,
+      "max": 73.0,
+      "mean": 46.32596,
+      "median": 46.0,
+      "std": 8.016418
+    },
+    "Dependent_count": {
+      "min": 0.0,
+      "max": 5.0,
+      "mean": 2.346203,
+      "median": 2.0,
+      "std": 1.298844
+    },
+    "Months_on_book": {
+      "min": 13.0,
+      "max": 56.0,
+      "mean": 35.928409,
+      "median": 36.0,
+      "std": 7.986022
+    },
+    "Total_Relationship_Count": {
+      "min": 1.0,
+      "max": 6.0,
+      "mean": 3.81258,
+      "median": 4.0,
+      "std": 1.554331
+    },
+    "Months_Inactive_12_mon": {
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.341167,
+      "median": 2.0,
+      "std": 1.010573
+    },
+    "Contacts_Count_12_mon": {
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 2.455317,
+      "median": 2.0,
+      "std": 1.106171
+    },
+    "Credit_Limit": {
+      "min": 1438.3,
+      "max": 34516.0,
+      "mean": 8631.953698,
+      "median": 4549.0,
+      "std": 9088.327899
+    },
+    "Total_Revolving_Bal": {
+      "min": 0.0,
+      "max": 2517.0,
+      "mean": 1162.814061,
+      "median": 1276.0,
+      "std": 814.947096
+    },
+    "Total_Amt_Chng_Q4_Q1": {
+      "min": 0.0,
+      "max": 3.397,
+      "mean": 0.759941,
+      "median": 0.736,
+      "std": 0.219196
+    },
+    "Total_Trans_Amt": {
+      "min": 510.0,
+      "max": 18484.0,
+      "mean": 4404.086304,
+      "median": 3899.0,
+      "std": 3396.961523
+    },
+    "Total_Trans_Ct": {
+      "min": 10.0,
+      "max": 139.0,
+      "mean": 64.858695,
+      "median": 67.0,
+      "std": 23.471412
+    },
+    "Total_Ct_Chng_Q4_Q1": {
+      "min": 0.0,
+      "max": 3.714,
+      "mean": 0.712222,
+      "median": 0.702,
+      "std": 0.238074
+    },
+    "Avg_Utilization_Ratio": {
+      "min": 0.0,
+      "max": 0.999,
+      "mean": 0.274894,
+      "median": 0.176,
+      "std": 0.275678
+    }
+  },
+  "preprocessing": {
+    "label_usage": "Attrition_Flag is excluded from clustering features and kept only for cluster interpretation/evaluation.",
+    "unknown_handling": "Unknown values are kept as explicit categories.",
+    "categorical_encoding": "One-hot encoding with pandas.get_dummies.",
+    "numeric_scaling": "RobustScaler, using median and IQR."
+  },
+  "columns": {
+    "excluded_columns": [
+      "CLIENTNUM",
+      "Attrition_Flag",
+      "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1",
+      "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2",
+      "Avg_Open_To_Buy"
+    ],
+    "numeric_scaled_columns": [
+      "Customer_Age",
+      "Dependent_count",
+      "Months_on_book",
+      "Total_Relationship_Count",
+      "Months_Inactive_12_mon",
+      "Contacts_Count_12_mon",
+      "Credit_Limit",
+      "Total_Revolving_Bal",
+      "Total_Amt_Chng_Q4_Q1",
+      "Total_Trans_Amt",
+      "Total_Trans_Ct",
+      "Total_Ct_Chng_Q4_Q1",
+      "Avg_Utilization_Ratio"
+    ],
+    "categorical_encoded_columns": [
+      "Gender",
+      "Education_Level",
+      "Marital_Status",
+      "Income_Category",
+      "Card_Category"
+    ],
+    "categorical_output_columns": [
+      "Gender_F",
+      "Gender_M",
+      "Education_Level_College",
+      "Education_Level_Doctorate",
+      "Education_Level_Graduate",
+      "Education_Level_High School",
+      "Education_Level_Post-Graduate",
+      "Education_Level_Uneducated",
+      "Education_Level_Unknown",
+      "Marital_Status_Divorced",
+      "Marital_Status_Married",
+      "Marital_Status_Single",
+      "Marital_Status_Unknown",
+      "Income_Category_$120K +",
+      "Income_Category_$40K - $60K",
+      "Income_Category_$60K - $80K",
+      "Income_Category_$80K - $120K",
+      "Income_Category_Less than $40K",
+      "Income_Category_Unknown",
+      "Card_Category_Blue",
+      "Card_Category_Gold",
+      "Card_Category_Platinum",
+      "Card_Category_Silver"
+    ],
+    "feature_columns": [
+      "Customer_Age",
+      "Dependent_count",
+      "Months_on_book",
+      "Total_Relationship_Count",
+      "Months_Inactive_12_mon",
+      "Contacts_Count_12_mon",
+      "Credit_Limit",
+      "Total_Revolving_Bal",
+      "Total_Amt_Chng_Q4_Q1",
+      "Total_Trans_Amt",
+      "Total_Trans_Ct",
+      "Total_Ct_Chng_Q4_Q1",
+      "Avg_Utilization_Ratio",
+      "Gender_F",
+      "Gender_M",
+      "Education_Level_College",
+      "Education_Level_Doctorate",
+      "Education_Level_Graduate",
+      "Education_Level_High School",
+      "Education_Level_Post-Graduate",
+      "Education_Level_Uneducated",
+      "Education_Level_Unknown",
+      "Marital_Status_Divorced",
+      "Marital_Status_Married",
+      "Marital_Status_Single",
+      "Marital_Status_Unknown",
+      "Income_Category_$120K +",
+      "Income_Category_$40K - $60K",
+      "Income_Category_$60K - $80K",
+      "Income_Category_$80K - $120K",
+      "Income_Category_Less than $40K",
+      "Income_Category_Unknown",
+      "Card_Category_Blue",
+      "Card_Category_Gold",
+      "Card_Category_Platinum",
+      "Card_Category_Silver"
+    ],
+    "scaler": "sklearn.preprocessing.RobustScaler",
+    "scaler_center_median": {
+      "Customer_Age": 46.0,
+      "Dependent_count": 2.0,
+      "Months_on_book": 36.0,
+      "Total_Relationship_Count": 4.0,
+      "Months_Inactive_12_mon": 2.0,
+      "Contacts_Count_12_mon": 2.0,
+      "Credit_Limit": 4549.0,
+      "Total_Revolving_Bal": 1276.0,
+      "Total_Amt_Chng_Q4_Q1": 0.736,
+      "Total_Trans_Amt": 3899.0,
+      "Total_Trans_Ct": 67.0,
+      "Total_Ct_Chng_Q4_Q1": 0.702,
+      "Avg_Utilization_Ratio": 0.176
+    },
+    "scaler_scale_iqr": {
+      "Customer_Age": 11.0,
+      "Dependent_count": 2.0,
+      "Months_on_book": 9.0,
+      "Total_Relationship_Count": 2.0,
+      "Months_Inactive_12_mon": 1.0,
+      "Contacts_Count_12_mon": 1.0,
+      "Credit_Limit": 8512.5,
+      "Total_Revolving_Bal": 1425.0,
+      "Total_Amt_Chng_Q4_Q1": 0.22799999999999998,
+      "Total_Trans_Amt": 2585.5,
+      "Total_Trans_Ct": 36.0,
+      "Total_Ct_Chng_Q4_Q1": 0.236,
+      "Avg_Utilization_Ratio": 0.48
+    }
+  },
+  "generated_files": {
+    "features": "E:\\HocTrenTruong\\MayHocCK\\data\\processed\\bank_churners_features.csv",
+    "labels": "E:\\HocTrenTruong\\MayHocCK\\data\\processed\\bank_churners_labels.csv",
+    "metadata": "E:\\HocTrenTruong\\MayHocCK\\data\\processed\\preprocessing_metadata.json"
+  }
+}
