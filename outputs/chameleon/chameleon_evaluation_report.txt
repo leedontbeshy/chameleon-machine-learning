@@ -1,0 +1,55 @@
+ĐÁNH GIÁ KẾT QUẢ THUẬT TOÁN CHAMELEON
+============================================================
+
+1. Thống kê tổng quan
+------------------------------------------------------------
+Tổng số khách hàng: 10127
+Số khách hàng rời bỏ: 1627
+Số khách hàng không rời bỏ: 8500
+Tỷ lệ rời bỏ toàn bộ dữ liệu: 0.1607
+Số cụm cuối cùng: 2
+
+2. Chỉ số đánh giá phân cụm
+------------------------------------------------------------
+Silhouette Score: 0.3174
+Nhận xét: Cấu trúc cụm ở mức trung bình, có phân tách nhưng chưa mạnh.
+
+Adjusted Rand Index: -0.0788
+Nhận xét: Cụm không khớp với nhãn churn thực tế, thấp hơn mức phân cụm ngẫu nhiên.
+
+Normalized Mutual Information: 0.0381
+Nhận xét: Nhãn cụm chứa rất ít thông tin về nhãn churn.
+
+3. Đánh giá chi tiết từng cụm
+------------------------------------------------------------
+Cụm 0:
+  - Tổng số khách hàng: 743
+  - Tỷ lệ kích thước cụm: 0.0734
+  - Khách hàng rời bỏ: 0
+  - Khách hàng không rời bỏ: 743
+  - Tỷ lệ rời bỏ trong cụm: 0.0000
+  - Chênh lệch so với tỷ lệ rời bỏ chung: -0.1607
+  - Attrition Lift: 0.0000
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 0.0000
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 1.0000
+  - Mức độ rủi ro: Lower risk than average
+
+Cụm 1:
+  - Tổng số khách hàng: 9384
+  - Tỷ lệ kích thước cụm: 0.9266
+  - Khách hàng rời bỏ: 1627
+  - Khách hàng không rời bỏ: 7757
+  - Tỷ lệ rời bỏ trong cụm: 0.1734
+  - Chênh lệch so với tỷ lệ rời bỏ chung: 0.0127
+  - Attrition Lift: 1.0792
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 1.0000
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 0.8266
+  - Mức độ rủi ro: Higher risk than average
+
+4. Kết luận
+------------------------------------------------------------
+Cụm có tỷ lệ rời bỏ cao nhất là cụm 1 với tỷ lệ rời bỏ 0.1734.
+Cụm có tỷ lệ rời bỏ thấp nhất là cụm 0 với tỷ lệ rời bỏ 0.0000.
+Kết quả cho thấy thuật toán Chameleon-based clustering có thể phát hiện một số cấu trúc nhóm khách hàng trong dữ liệu. Tuy nhiên, dựa trên ARI và NMI, kết quả phân cụm chưa khớp mạnh với nhãn churn thực tế. Vì vậy, mô hình phù hợp hơn với mục tiêu khám phá nhóm khách hàng hơn là dùng trực tiếp như mô hình dự đoán churn.
