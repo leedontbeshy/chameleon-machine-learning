@@ -1,0 +1,81 @@
+ĐÁNH GIÁ KẾT QUẢ THUẬT TOÁN CHAMELEON
+============================================================
+
+1. Thống kê tổng quan
+------------------------------------------------------------
+Tổng số khách hàng: 10127
+Số khách hàng rời bỏ: 1627
+Số khách hàng không rời bỏ: 8500
+Tỷ lệ rời bỏ toàn bộ dữ liệu: 0.1607
+Số cụm cuối cùng: 4
+
+2. Chỉ số đánh giá phân cụm
+------------------------------------------------------------
+Silhouette Score: 0.0849
+Nhận xét: Cấu trúc cụm yếu, các cụm còn chồng lấn nhiều.
+
+Adjusted Rand Index: -0.0403
+Nhận xét: Cụm không khớp với nhãn churn thực tế, thấp hơn mức phân cụm ngẫu nhiên.
+
+Normalized Mutual Information: 0.0295
+Nhận xét: Nhãn cụm chứa rất ít thông tin về nhãn churn.
+
+3. Đánh giá chi tiết từng cụm
+------------------------------------------------------------
+Cụm 0:
+  - Tổng số khách hàng: 357
+  - Tỷ lệ kích thước cụm: 0.0353
+  - Khách hàng rời bỏ: 72
+  - Khách hàng không rời bỏ: 285
+  - Tỷ lệ rời bỏ trong cụm: 0.2017
+  - Chênh lệch so với tỷ lệ rời bỏ chung: 0.0410
+  - Attrition Lift: 1.2553
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 0.0443
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 0.7983
+  - Mức độ rủi ro: Higher risk than average
+
+Cụm 1:
+  - Tổng số khách hàng: 246
+  - Tỷ lệ kích thước cụm: 0.0243
+  - Khách hàng rời bỏ: 66
+  - Khách hàng không rời bỏ: 180
+  - Tỷ lệ rời bỏ trong cụm: 0.2683
+  - Chênh lệch so với tỷ lệ rời bỏ chung: 0.1076
+  - Attrition Lift: 1.6699
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 0.0406
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 0.7317
+  - Mức độ rủi ro: Higher risk than average
+
+Cụm 2:
+  - Tổng số khách hàng: 744
+  - Tỷ lệ kích thước cụm: 0.0735
+  - Khách hàng rời bỏ: 0
+  - Khách hàng không rời bỏ: 744
+  - Tỷ lệ rời bỏ trong cụm: 0.0000
+  - Chênh lệch so với tỷ lệ rời bỏ chung: -0.1607
+  - Attrition Lift: 0.0000
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 0.0000
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 1.0000
+  - Mức độ rủi ro: Lower risk than average
+
+Cụm 3:
+  - Tổng số khách hàng: 8780
+  - Tỷ lệ kích thước cụm: 0.8670
+  - Khách hàng rời bỏ: 1489
+  - Khách hàng không rời bỏ: 7291
+  - Tỷ lệ rời bỏ trong cụm: 0.1696
+  - Chênh lệch so với tỷ lệ rời bỏ chung: 0.0089
+  - Attrition Lift: 1.0556
+  - Tỷ trọng trong toàn bộ khách hàng rời bỏ: 0.9152
+  - Lớp chiếm đa số: Existing Customer
+  - Độ tinh khiết của cụm: 0.8304
+  - Mức độ rủi ro: Higher risk than average
+
+4. Kết luận
+------------------------------------------------------------
+Cụm có tỷ lệ rời bỏ cao nhất là cụm 1 với tỷ lệ rời bỏ 0.2683.
+Cụm có tỷ lệ rời bỏ thấp nhất là cụm 2 với tỷ lệ rời bỏ 0.0000.
+Dựa trên ARI = -0.0403, mức độ khớp giữa cụm và nhãn churn rất thấp, thấp hơn cả mức phân cụm ngẫu nhiên. Dựa trên NMI = 0.0295, nhãn cụm chứa rất ít thông tin về nhãn churn. Kết quả cho thấy thuật toán Chameleon có thể phát hiện một số cấu trúc nhóm khách hàng trong dữ liệu. Tuy nhiên, kết quả phân cụm chưa khớp mạnh với nhãn churn thực tế. Mô hình phù hợp hơn với mục tiêu khám phá nhóm khách hàng hơn là dùng trực tiếp như mô hình dự đoán churn.
