@@ -1,4 +1,0 @@
-algorithm,n_clusters,silhouette_score,davies_bouldin_index,adjusted_rand_index,normalized_mutual_info,sil_rank,dbi_rank,ari_rank,nmi_rank,overall_rank
-K-Means,4,0.108556,2.309185,0.032012,0.061679,2.0,3.0,1.0,1.0,1.75
-HAC,4,0.148452,1.889284,-0.0758,0.025002,1.0,1.0,3.0,3.0,2.0
-Chameleon,4,0.084871,1.933448,-0.040343,0.029503,3.0,2.0,2.0,2.0,2.25
