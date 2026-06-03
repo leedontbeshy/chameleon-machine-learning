@@ -1,2 +1,0 @@
-n_clusters,silhouette_score,adjusted_rand_index,normalized_mutual_info
-4,0.08487146712925879,-0.040342732288687434,0.02950341601278989
