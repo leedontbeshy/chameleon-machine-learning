@@ -24,6 +24,9 @@ DEFAULT_METRICS_FILE = (
 
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "chameleon" / "evaluation"
 
+DEFAULT_RAW_DATA_FILE = (
+    PROJECT_ROOT / "data" / "BankChurners.csv"
+)
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -56,6 +59,13 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
         help=f"Directory for evaluation outputs. Default: {DEFAULT_OUTPUT_DIR}",
+    )
+
+    parser.add_argument(
+        "--raw-data-file",
+        type=Path,
+        default=DEFAULT_RAW_DATA_FILE,
+        help=f"Path to raw BankChurners.csv. Default: {DEFAULT_RAW_DATA_FILE}",
     )
 
     return parser.parse_args()
@@ -112,6 +122,14 @@ def load_outputs(
     )
 
     return result_df, summary_df, metrics_df
+
+def load_raw_dataset(raw_file: Path) -> pd.DataFrame:
+    if not raw_file.exists():
+        raise FileNotFoundError(
+            f"Raw dataset not found: {raw_file}"
+        )
+
+    return pd.read_csv(raw_file)
 
 
 def build_confusion_table(result_df: pd.DataFrame) -> pd.DataFrame:
@@ -440,11 +458,100 @@ def build_text_report(
 
     return "\n".join(lines)
 
+def build_analysis_dataset(
+    raw_df: pd.DataFrame,
+    result_df: pd.DataFrame,
+) -> pd.DataFrame:
+
+    analysis_df = raw_df.merge(
+        result_df[
+            [
+                "CLIENTNUM",
+                "Cluster",
+                "Attrition_Label",
+            ]
+        ],
+        on="CLIENTNUM",
+        how="inner",
+    )
+
+    return analysis_df
+
+
+def build_feature_deviation(
+    analysis_df: pd.DataFrame,
+) -> pd.DataFrame:
+
+    exclude_columns = {
+        "CLIENTNUM",
+        "Cluster",
+        "Attrition_Label",
+        "Attrition_Label_x",
+        "Attrition_Label_y",
+    }
+
+    numeric_columns = [
+        col
+        for col in analysis_df.select_dtypes(include=np.number).columns
+        if (
+            col not in exclude_columns
+            and not col.startswith("Naive_Bayes_Classifier_")
+        )
+    ]
+
+    overall_means = analysis_df[
+        numeric_columns
+    ].mean()
+
+    rows = []
+
+    for cluster_id in sorted(
+        analysis_df["Cluster"].unique()
+    ):
+
+        cluster_df = analysis_df[
+            analysis_df["Cluster"] == cluster_id
+        ]
+
+        cluster_means = cluster_df[
+            numeric_columns
+        ].mean()
+
+        for col in numeric_columns:
+
+            overall = overall_means[col]
+
+            if abs(overall) < 1e-6:
+                continue
+
+            deviation_pct = (
+                (cluster_means[col] - overall)
+                / overall
+            ) * 100
+
+            rows.append(
+                {
+                    "Cluster": cluster_id,
+                    "Feature": col,
+                    "Overall_Mean": round(overall, 2),
+                    "Cluster_Mean": round(
+                        cluster_means[col],
+                        2,
+                    ),
+                    "Deviation_Percent": round(
+                        deviation_pct,
+                        2,
+                    ),
+                }
+            )
+
+    return pd.DataFrame(rows)
 
 def write_outputs(
     cluster_eval: pd.DataFrame,
     overall: dict[str, float | int | str],
     report_text: str,
+    feature_deviation: pd.DataFrame,
     output_dir: Path,
 ) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -452,6 +559,11 @@ def write_outputs(
     cluster_eval_path = output_dir / "chameleon_cluster_evaluation.csv"
     overall_path = output_dir / "chameleon_overall_evaluation.csv"
     report_path = output_dir / "chameleon_evaluation_report.txt"
+
+    feature_deviation.to_csv(
+    output_dir /
+    "cluster_feature_deviation.csv",
+    index=False,)
 
     cluster_eval.to_csv(cluster_eval_path, index=False)
     pd.DataFrame([overall]).to_csv(overall_path, index=False)
@@ -485,6 +597,21 @@ def main() -> None:
 
     cluster_eval = calculate_cluster_evaluation(result_df)
 
+    raw_df = load_raw_dataset(
+        args.raw_data_file.resolve()
+    )
+
+    analysis_df = build_analysis_dataset(
+        raw_df,
+        result_df,
+    )
+
+    feature_deviation = (
+        build_feature_deviation(
+            analysis_df
+        )
+    )
+
     overall = calculate_overall_evaluation(
         result_df=result_df,
         metrics_df=metrics_df,
@@ -500,6 +627,7 @@ def main() -> None:
         cluster_eval=cluster_eval,
         overall=overall,
         report_text=report_text,
+        feature_deviation=feature_deviation,
         output_dir=args.output_dir.resolve(),
     )
 
