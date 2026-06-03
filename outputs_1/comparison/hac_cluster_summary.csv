@@ -1,0 +1,5 @@
+Cluster,Total_Customers,Attrited_Customers,Attrition_Rate,Attrition_Lift,Cluster_Size_Ratio
+0,7846,1452,0.1851,1.1521,0.7748
+1,910,23,0.0253,0.1575,0.0899
+2,443,10,0.0226,0.1407,0.0437
+3,928,142,0.153,0.9523,0.0916
