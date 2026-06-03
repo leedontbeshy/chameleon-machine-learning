@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-So sánh thuật toán Chameleon với K-Means và HAC.
-
-Đánh giá bằng Silhouette Score, Adjusted Rand Index (ARI) và
-Normalized Mutual Information (NMI).
-
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -25,7 +16,9 @@ from sklearn.metrics import (
     adjusted_rand_score,
     normalized_mutual_info_score,
     silhouette_score,
+    davies_bouldin_score,
 )
+
 
 # ---------------------------------------------------------------------------
 # 1. Cấu hình đường dẫn
@@ -134,34 +127,66 @@ def train_hac(X: np.ndarray, n_clusters: int, linkage: str = "ward") -> np.ndarr
 # 6. Đánh giá chất lượng phân cụm
 # ---------------------------------------------------------------------------
 
-def evaluate(X: np.ndarray, cluster_labels: np.ndarray, true_labels: np.ndarray):
-    """Compute Silhouette, ARI and NMI."""
+def evaluate(
+    X: np.ndarray,
+    cluster_labels: np.ndarray,
+    true_labels: np.ndarray,
+):
+    """
+    Compute clustering evaluation metrics.
+    """
+
     n_clusters = len(set(cluster_labels) - {-1})
 
     if n_clusters >= 2:
         sil = float(silhouette_score(X, cluster_labels))
+        dbi = float(davies_bouldin_score(X, cluster_labels))
     else:
         sil = float("nan")
+        dbi = float("nan")
 
-    ari = float(adjusted_rand_score(true_labels, cluster_labels))
-    nmi = float(normalized_mutual_info_score(true_labels, cluster_labels))
+    ari = float(
+        adjusted_rand_score(
+            true_labels,
+            cluster_labels,
+        )
+    )
+
+    nmi = float(
+        normalized_mutual_info_score(
+            true_labels,
+            cluster_labels,
+        )
+    )
 
     return {
         "n_clusters": n_clusters,
         "silhouette_score": round(sil, 6),
+        "davies_bouldin_index": round(dbi, 6),
         "adjusted_rand_index": round(ari, 6),
         "normalized_mutual_info": round(nmi, 6),
     }
-
 
 # ---------------------------------------------------------------------------
 # 7. Bảng tổng hợp churn theo cụm (giống build_cluster_summary)
 # ---------------------------------------------------------------------------
 
-def cluster_summary(cluster_labels: np.ndarray, labels_df: pd.DataFrame):
-    """Build churn rate summary per cluster."""
+def cluster_summary(
+    cluster_labels: np.ndarray,
+    labels_df: pd.DataFrame,
+):
+    """
+    Build cluster churn summary.
+    """
+
     df = labels_df.copy()
+
     df["Cluster"] = cluster_labels
+
+    overall_attrition = (
+        df["Attrition_Label"]
+        .mean()
+    )
 
     summary = (
         df.groupby("Cluster")
@@ -172,20 +197,97 @@ def cluster_summary(cluster_labels: np.ndarray, labels_df: pd.DataFrame):
         )
         .reset_index()
     )
-    summary["Attrition_Rate"] = summary["Attrition_Rate"].round(4)
+
+    summary["Attrition_Rate"] = (
+        summary["Attrition_Rate"]
+        .round(4)
+    )
+
+    summary["Attrition_Lift"] = (
+        summary["Attrition_Rate"]
+        / overall_attrition
+    ).round(4)
+
+    summary["Cluster_Size_Ratio"] = (
+        summary["Total_Customers"]
+        / len(df)
+    ).round(4)
+
     return summary
 
 
+#9. Xếp hạng thuật toán dựa trên trung bình của các thứ hạng từng metric (Silhouette, DBI, ARI, NMI).
+def build_algorithm_ranking(
+    comparison_df: pd.DataFrame,
+):
+    """
+    Ranking of clustering algorithms.
+    """
+
+    df = comparison_df.copy()
+
+    df["sil_rank"] = (
+        df["silhouette_score"]
+        .rank(ascending=False)
+    )
+
+    df["dbi_rank"] = (
+        df["davies_bouldin_index"]
+        .rank(ascending=True)
+    )
+
+    df["ari_rank"] = (
+        df["adjusted_rand_index"]
+        .rank(ascending=False)
+    )
+
+    df["nmi_rank"] = (
+        df["normalized_mutual_info"]
+        .rank(ascending=False)
+    )
+
+    df["overall_rank"] = (
+        df[
+            [
+                "sil_rank",
+                "dbi_rank",
+                "ari_rank",
+                "nmi_rank",
+            ]
+        ]
+        .mean(axis=1)
+    )
+
+    return (
+        df.sort_values(
+            "overall_rank"
+        )
+        .reset_index(drop=True)
+    )
+
 # ---------------------------------------------------------------------------
-# 8. Vẽ biểu đồ so sánh
+# 10. Vẽ biểu đồ so sánh
 # ---------------------------------------------------------------------------
 
 def plot_metrics_comparison(comparison_df: pd.DataFrame, output_dir: Path):
     """Bar chart comparing Silhouette, ARI, NMI across algorithms."""
-    metrics_to_plot = ["silhouette_score", "adjusted_rand_index", "normalized_mutual_info"]
-    labels_vi = ["Silhouette Score", "Adjusted Rand Index", "Normalized Mutual Info"]
+    
+    metrics_to_plot = [
+        "silhouette_score",
+        "davies_bouldin_index",
+        "adjusted_rand_index",
+        "normalized_mutual_info",
+    ]
 
-    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    labels_vi = [
+        "Silhouette Score",
+        "Davies-Bouldin Index",
+        "Adjusted Rand Index",
+        "Normalized Mutual Info",
+    ]
+
+    fig, axes = plt.subplots(1, 4, figsize=(20, 5))
+
     fig.suptitle("Clustering Algorithm Comparison", fontsize=14, fontweight="bold")
 
     colors = ["#2196F3", "#FF9800", "#4CAF50", "#E91E63"]
@@ -200,9 +302,15 @@ def plot_metrics_comparison(comparison_df: pd.DataFrame, output_dir: Path):
         # Show value above each bar.
         for bar, val in zip(bars, values):
             if not np.isnan(val):
+                y_pos = (
+                    val + 0.01
+                    if val >= 0
+                    else val - 0.03
+                )
+
                 ax.text(
                     bar.get_x() + bar.get_width() / 2,
-                    bar.get_height() + 0.005,
+                    y_pos,
                     f"{val:.4f}",
                     ha="center", va="bottom", fontsize=8,
                 )
@@ -252,7 +360,7 @@ def plot_pca_scatter(
 
 
 # ---------------------------------------------------------------------------
-# 9. Luồng chạy chính
+# 11. Luồng chạy chính
 # ---------------------------------------------------------------------------
 
 def main():
@@ -327,13 +435,39 @@ def main():
 
     # --- Comparison summary table ---
     col_order = [
-        "algorithm", "n_clusters",
-        "silhouette_score", "adjusted_rand_index", "normalized_mutual_info",
+        "algorithm",
+        "n_clusters",
+        "silhouette_score",
+        "davies_bouldin_index",
+        "adjusted_rand_index",
+        "normalized_mutual_info",
     ]
+
     comparison_df = pd.DataFrame(results)[col_order]
 
     comparison_path = output_dir / "comparison_metrics.csv"
     comparison_df.to_csv(comparison_path, index=False)
+
+    ranking_df = (
+        build_algorithm_ranking(
+            comparison_df
+        )
+    )
+
+    ranking_path = (
+        output_dir /
+        "algorithm_ranking.csv"
+    )
+
+    ranking_df.to_csv(
+        ranking_path,
+        index=False,
+    )
+
+    print(
+        f"Saved: {ranking_path}"
+    )
+
     print(f"\nSaved: {comparison_path}")
 
     print("\n" + "=" * 70)
