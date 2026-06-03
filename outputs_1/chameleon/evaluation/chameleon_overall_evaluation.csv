@@ -1,2 +1,0 @@
-total_customers,total_attrited_customers,total_non_attrited_customers,overall_attrition_rate,n_clusters,silhouette_score,adjusted_rand_index,normalized_mutual_info,highest_risk_cluster,highest_cluster_attrition_rate,lowest_risk_cluster,lowest_cluster_attrition_rate
-10127,1627,8500,0.1607,4,0.0849,-0.0403,0.0295,1,0.2683,2,0.0
